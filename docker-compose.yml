@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  my_service:
+    image: ubuntu-full-packages:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - my_data_volume:/app/data
+      - ./local_data:/app/data_local
+
+volumes:
+  my_data_volume:
+    driver: local
+
