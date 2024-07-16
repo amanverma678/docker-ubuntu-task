@@ -4,7 +4,7 @@ FROM ubuntu:latest
 # Set environment variables to avoid some interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update the package list, install essential packages, install AWS CLI, MySQL, JDK 17, and Jenkins
+# Update the package list & install essential packages
 RUN apt-get update && apt-get install -y \
         build-essential \
         curl \
