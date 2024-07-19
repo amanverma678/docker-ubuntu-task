@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Source .env file to use environment variables
-RUN . /root/.env && \
+RUN 
     # Install Docker
     apt-get update && \
     apt-get install -y ca-certificates curl && \
