@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
         iputils-ping \
         python3 \
         python3-pip \
+        python3-venv \
         sysstat \
         tar \
         gzip \
@@ -35,7 +36,7 @@ RUN apt-get update && apt-get install -y \
         zsh && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Docker, Minikube, Terraform, and Ansible
+# Install Docker, Minikube, Terraform
 RUN apt-get update && \
     apt-get install -y ca-certificates curl && \
     install -m 0755 -d /etc/apt/keyrings && \
@@ -52,8 +53,12 @@ RUN apt-get update && \
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list && \
     apt-get update && \
     apt-get install -y terraform=${TERRAFORM_VERSION} && \
-    pip3 install ansible==${ANSIBLE_VERSION} && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set up a Python virtual environment and install Ansible
+RUN python3 -m venv /opt/ansible-venv && \
+    /opt/ansible-venv/bin/pip install --upgrade pip && \
+    /opt/ansible-venv/bin/pip install ansible==${ANSIBLE_VERSION}
 
 # # Copy scripts into the image
 # COPY ansible.sh docker.sh kube-install.sh terraform.sh /root/scripts/
