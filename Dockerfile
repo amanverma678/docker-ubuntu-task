@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Copy .env file into the image
 COPY .env /root/
 
-# Install essential packages and tools
+# Install essential packages
 RUN apt-get update && apt-get install -y \
         build-essential \
         curl \
@@ -37,36 +37,28 @@ RUN apt-get update && apt-get install -y \
 # Source .env file to use environment variables
 RUN set -a && . /root/.env && set +a && \
     # Install Docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
-    apt-get update && apt-get install -y docker-ce=${DOCKER_VERSION}~3-0~ubuntu-$(lsb_release -cs) && \
-    # Install Kubernetes
-    curl -LO "https://dl.k8s.io/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl" && \
-    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
-    rm kubectl && \
+    apt-get update && \
+    apt-get install -y ca-certificates curl && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y docker-ce=${DOCKER_VERSION} docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+    # Install Minikube
+    curl -LO https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 && \
+    install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64 && \
     # Install Terraform
-    curl -LO "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
-    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    mv terraform /usr/local/bin/ && \
-    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    apt-get update && \
+    apt-get install -y gnupg software-properties-common && \
+    wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list && \
+    apt-get update && \
+    apt-get install -y terraform=${TERRAFORM_VERSION} && \
     # Install Ansible
     pip3 install ansible==${ANSIBLE_VERSION} && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# # Copy scripts into the image
-# COPY ansible.sh docker.sh kube-install.sh terraform.sh /root/scripts/
-
-# # Make scripts executable
-# RUN chmod +x /root/scripts/*.sh
-
-# # Run all scripts sequentially
-# RUN /root/scripts/ansible.sh && \
-#     /root/scripts/docker.sh && \
-#     /root/scripts/kube-install.sh && \
-#     /root/scripts/terraform.sh && \
-#     # Clean up scripts after execution to reduce image size
-#     rm -rf /root/scripts/*.sh
 
 # Set the working directory
 WORKDIR /root
