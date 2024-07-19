@@ -5,7 +5,6 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Define environment variables for tool versions
-ENV DOCKER_VERSION=5:20.10.23~3-0~ubuntu-focal
 ENV MINIKUBE_VERSION=latest
 ENV TERRAFORM_VERSION=1.0.11
 ENV ANSIBLE_VERSION=4.9.0
@@ -44,7 +43,7 @@ RUN apt-get update && \
     chmod a+r /etc/apt/keyrings/docker.asc && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     apt-get update && \
-    apt-get install -y docker-ce=${DOCKER_VERSION} docker-ce-cli=${DOCKER_VERSION} containerd.io docker-buildx-plugin docker-compose-plugin && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
     curl -LO https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 && \
     install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64 && \
     apt-get update && \
