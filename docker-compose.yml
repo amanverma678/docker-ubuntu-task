@@ -8,9 +8,17 @@ services:
       dockerfile: Dockerfile
     volumes:
       - my_data_volume:/app/data
-      - ./local_data:/app/data_local
+      - type: bind
+        source: ./local_data
+        target: /app/data_local
+
+    networks:
+      - my_network
 
 volumes:
   my_data_volume:
     driver: local
 
+networks:
+  my_network:
+    driver: bridge
