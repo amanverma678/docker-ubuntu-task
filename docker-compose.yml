@@ -9,7 +9,7 @@ services:
     volumes:
       - my_data_volume:/app/data
       - type: bind
-        source: ./local_data
+        source: /home/ubuntu/docker-ubuntu-task/local_data
         target: /app/data_local
 
     networks:
