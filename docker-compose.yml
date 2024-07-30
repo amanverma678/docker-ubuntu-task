@@ -1,3 +1,29 @@
+# version: '3.8'
+
+# services:
+#   my_service:
+#     image: ubuntu-full-packages:latest
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     volumes:
+#       - my_data_volume:/app/data
+#       - type: bind
+#         source: /home/ubuntu/docker-ubuntu-task/local_data
+#         target: /app/data_local
+
+#     networks:
+#       - my_network
+
+# volumes:
+#   my_data_volume:
+#     driver: local
+
+# networks:
+#   my_network:
+#     driver: bridge
+
+
 version: '3.8'
 
 services:
@@ -7,16 +33,34 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - my_data_volume:/app/data
+      - terraform_data:/root/.terraform
+      - minikube_data:/root/.minikube
+      - ansible_data:/opt/ansible-venv
+      - docker_data:/var/lib/docker
       - type: bind
-        source: /home/ubuntu/docker-ubuntu-task/local_data
-        target: /app/data_local
+        source: /local/terraform
+        target: /root/.terraform
+      - type: bind
+        source: /local/minikube
+        target: /root/.minikube
+      - type: bind
+        source: /local/ansible
+        target: /opt/ansible-venv
+      - type: bind
+        source: /local/docker
+        target: /var/lib/docker
 
     networks:
       - my_network
 
 volumes:
-  my_data_volume:
+  terraform_data:
+    driver: local
+  minikube_data:
+    driver: local
+  ansible_data:
+    driver: local
+  docker_data:
     driver: local
 
 networks:
