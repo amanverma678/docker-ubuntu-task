@@ -27,4 +27,8 @@ terraform --version
 ansible --version
 minikube version
 
+mkdir -p /local/terraform
+mkdir -p /local/minikube
+mkdir -p /local/ansible
+mkdir -p /local/docker
 echo "Installation complete. Terraform, Ansible, and Minikube are installed locally."
